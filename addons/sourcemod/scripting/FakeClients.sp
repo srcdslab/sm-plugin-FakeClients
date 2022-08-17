@@ -1,21 +1,22 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 
-#define PL_VERSION "1.1"
+#define PL_VERSION "2.0"
 
-new Handle:g_hCount;
-new Handle:g_hDelay;
-new Handle:g_hNames;
+Handle g_hCount;
+Handle g_hDelay;
+Handle g_hNames;
 
-public Plugin:myinfo = {
+public Plugin myinfo = {
 	name        = "FakeClients",
 	author      = "Tsunami",
 	description = "Put fake clients in server",
 	version     = PL_VERSION,
 	url         = "http://tsunami-productions.nl"
-};
+}
 
 public void OnPluginStart() 
 {
@@ -33,7 +34,7 @@ public void OnMapStart()
 	CreateTimer(GetConVarInt(g_hDelay) * 1.0, Timer_CreateFakeClients);
 }
 
-public void OnClientPutInServer(client) 
+public void OnClientPutInServer(int client) 
 {
 	if(!client)
 		return;
@@ -72,12 +73,12 @@ public void OnClientPutInServer(client)
 	}
 }
 
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
 	CreateTimer(1.0, Timer_CreateFakeClient);
 }
 
-public Action:Timer_CreateFakeClient(Handle:timer)
+public Action Timer_CreateFakeClient(Handle timer)
 {
 	int iBots = 0, iClients = GetClientCount(true), iMaxBots = GetConVarInt(g_hCount);
 	
@@ -93,7 +94,10 @@ public Action:Timer_CreateFakeClient(Handle:timer)
 		
 		if (iBots < iMaxBots && iClients < iMaxBots) 
 		{
-			decl iTargets[MAXPLAYERS], bool:tn_is_ml, String:sName[MAX_NAME_LENGTH], String:sTarget[MAX_TARGET_LENGTH];
+			char sTarget[MAX_TARGET_LENGTH];
+			char sName[MAX_NAME_LENGTH];
+			int iTargets[MAXPLAYERS];
+			bool bTN_Is_ML;
 			GetArrayString(g_hNames, GetRandomInt(0, GetArraySize(g_hNames) - 1), sName, sizeof(sName));
 			
 			while (ProcessTargetString(sName,
@@ -103,7 +107,7 @@ public Action:Timer_CreateFakeClient(Handle:timer)
 			                           COMMAND_FILTER_NO_MULTI,
 			                           sTarget,
 			                           MAX_TARGET_LENGTH,
-			                           tn_is_ml) == 1 && IsFakeClient(iTargets[0])) 
+			                           bTN_Is_ML) == 1 && IsFakeClient(iTargets[0])) 
 			{
 				GetArrayString(g_hNames, GetRandomInt(0, GetArraySize(g_hNames) - 1), sName, sizeof(sName));
 			}
@@ -115,20 +119,22 @@ public Action:Timer_CreateFakeClient(Handle:timer)
 	return Plugin_Handled;
 }
 
-public Action:Timer_CreateFakeClients(Handle:timer) 
+public Action Timer_CreateFakeClients(Handle timer) 
 {
-	for (new i = 1, c = GetConVarInt(g_hCount); i <= c; i++) 
+	for (int i = 1, c = GetConVarInt(g_hCount); i <= c; i++) 
 	{
 		CreateTimer(i * 1.0, Timer_CreateFakeClient);
 	}
+
+	return Plugin_Continue;
 }
 
-ParseNames() 
+stock void ParseNames() 
 {
-	decl String:sBuffer[256];
+	char sBuffer[256];
 	BuildPath(Path_SM, sBuffer, sizeof(sBuffer), "configs/fakeclients.txt");
 	
-	new Handle:hConfig = OpenFile(sBuffer, "r");
+	Handle hConfig = OpenFile(sBuffer, "r");
 	
 	if (hConfig != INVALID_HANDLE) 
 	{
