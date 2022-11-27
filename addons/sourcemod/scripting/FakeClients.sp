@@ -4,8 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define PL_VERSION "2.0"
-
 Handle g_hCount;
 Handle g_hDelay;
 Handle g_hNames;
@@ -14,13 +12,12 @@ public Plugin myinfo = {
 	name        = "FakeClients",
 	author      = "Tsunami",
 	description = "Put fake clients in server",
-	version     = PL_VERSION,
+	version     = "2.0.0",
 	url         = "http://tsunami-productions.nl"
 }
 
 public void OnPluginStart() 
 {
-	CreateConVar("sm_fakeclients_version", PL_VERSION, "Put fake clients in server", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	g_hCount = CreateConVar("sm_fakeclients_players", "8",   "Number of players to simulate", _, true, 0.0, true, 64.0);
 	g_hDelay = CreateConVar("sm_fakeclients_delay",   "120", "Delay after map change before fake clients join (seconds)", _, true, 0.0, true, 10000.0);
 	g_hNames = CreateArray(64);
