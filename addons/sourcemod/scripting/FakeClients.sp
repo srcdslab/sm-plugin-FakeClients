@@ -12,7 +12,7 @@ public Plugin myinfo = {
 	name        = "FakeClients",
 	author      = "Tsunami",
 	description = "Put fake clients in server",
-	version     = "2.0.0",
+	version     = "2.0.1",
 	url         = "http://tsunami-productions.nl"
 }
 
@@ -57,8 +57,11 @@ public void OnClientPutInServer(int client)
 
 				GetClientName(i, sName, sizeof(sName));
 				
-				if (hTVName != INVALID_HANDLE) 
+				if (hTVName != INVALID_HANDLE)
+				{
 					GetConVarString(hTVName, sTVName, sizeof(sTVName));
+					CloseHandle(hTVName);
+				}
 				
 				if (!StrEqual(sName, sTVName))
 				{
