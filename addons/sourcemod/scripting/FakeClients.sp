@@ -281,15 +281,19 @@ public Action Timer_CreateFakeClient(Handle timer)
 	// Pick a random name, re-roll if it's already taken by a fake client.
 	// Stop after trying all available names to prevent an infinite loop when
 	// the name list is smaller than the number of bots (duplicates are allowed).
+	// If no names are configured, CreateFakeClient will assign a default name based on the engine.
 	int iNameCount = g_hNames.Length;
-	g_hNames.GetString(GetRandomInt(0, iNameCount - 1), sName, sizeof(sName));
-
-	for (int iAttempt = 1; iAttempt < iNameCount; iAttempt++)
+	if (iNameCount > 0)
 	{
-		if (ProcessTargetString(sName, 0, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_MULTI, sTarget, MAX_TARGET_LENGTH, bTN_Is_ML) != 1 || !IsFakeClient(iTargets[0]))
-			break;
-
 		g_hNames.GetString(GetRandomInt(0, iNameCount - 1), sName, sizeof(sName));
+
+		for (int iAttempt = 1; iAttempt < iNameCount; iAttempt++)
+		{
+			if (ProcessTargetString(sName, 0, iTargets, MAXPLAYERS, COMMAND_FILTER_NO_MULTI, sTarget, MAX_TARGET_LENGTH, bTN_Is_ML) != 1 || !IsFakeClient(iTargets[0]))
+				break;
+
+			g_hNames.GetString(GetRandomInt(0, iNameCount - 1), sName, sizeof(sName));
+		}
 	}
 
 	CreateFakeClient(sName);
