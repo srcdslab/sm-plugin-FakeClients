@@ -407,7 +407,7 @@ stock void ParseNames()
 			g_hNames.PushString(sBuffer);
 	}
 
-	hConfig.Close();
+	delete hConfig;
 
 	if (!g_hNames.Length)
 		LogError("configs/fakeclients.txt is empty — using default engine name");
