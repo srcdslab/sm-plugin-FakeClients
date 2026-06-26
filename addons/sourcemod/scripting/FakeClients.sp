@@ -42,6 +42,7 @@ public void OnMapStart()
 	ParseNames();
 	ParseTiers();
 	CreateTimer(g_hDelay.FloatValue, Timer_CreateFakeClients, _, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_hDelay.FloatValue + 90.0, Timer_CreateFakeClients, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public void OnConVarChanged(ConVar hConVar, const char[] sOldValue, const char[] sNewValue)
