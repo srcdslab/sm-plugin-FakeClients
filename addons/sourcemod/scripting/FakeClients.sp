@@ -173,7 +173,7 @@ void ScheduleBotsToAdd(int iToAdd, int iFreeSlots)
 	{
 		g_iPendingBots++;
 		CreateTimer(fNextDelay, Timer_CreateFakeClient, _, TIMER_FLAG_NO_MAPCHANGE);
-		fNextDelay += GetRandomFloat(0.7, 1.9);
+		fNextDelay += GetRandomFloat(0.5, 1.6);
 	}
 }
 
