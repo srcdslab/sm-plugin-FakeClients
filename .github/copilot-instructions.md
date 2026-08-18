@@ -16,28 +16,27 @@ This repository contains the **FakeClients** plugin for SourceMod, a SourcePawn 
 ```
 /
 ├── .github/
-│   ├── workflows/ci.yml          # CI/CD pipeline using SourceKnight
+│   ├── workflows/ci.yml          # CI/CD pipeline using native GitHub Actions
 │   └── copilot-instructions.md   # This file
 ├── addons/sourcemod/
 │   ├── scripting/
 │   │   └── FakeClients.sp        # Main plugin source code
 │   └── configs/
 │       └── fakeclients.txt       # List of fake client names
-├── sourceknight.yaml             # Build configuration
 └── .gitignore                    # Git ignore patterns
 ```
 
 ## Development Environment
 
 ### Prerequisites
-- **SourceMod**: 1.11.0+ (current target: 1.11.0-git6917)
-- **Build System**: SourceKnight (modern SourcePawn build tool)
+- **SourceMod**: 1.12.x
+- **Build System**: Native GitHub Actions (`rumblefrog/setup-sp`)
 - **Language**: SourcePawn
-- **Compiler**: Latest SourcePawn compiler via SourceKnight
+- **Compiler**: Latest SourcePawn compiler via `rumblefrog/setup-sp`
 
 ### Build Process
-1. **Local Development**: Use SourceKnight CLI tools
-2. **CI/CD**: Automated via GitHub Actions using `maxime1907/action-sourceknight@v1`
+1. **Local Development**: Install a SourcePawn compiler (`spcomp`) matching SourceMod 1.12.x
+2. **CI/CD**: Automated via GitHub Actions using `rumblefrog/setup-sp`
 3. **Output**: Compiled `.smx` files in `/addons/sourcemod/plugins/`
 4. **Packaging**: Automatic release creation with plugin + configs
 
@@ -184,7 +183,7 @@ int maxPlayers = g_cvPlayerCount.IntValue;
 
 ### Automated Build Process
 1. **Trigger**: Push to any branch or pull request
-2. **Build**: SourceKnight compiles the plugin
+2. **Build**: `spcomp` (via `rumblefrog/setup-sp`) compiles the plugin
 3. **Package**: Creates distributable package with plugin + configs
 4. **Release**: Automatic release creation for main/master branch
 5. **Artifacts**: Built packages available for download
@@ -197,7 +196,7 @@ int maxPlayers = g_cvPlayerCount.IntValue;
 ## Troubleshooting
 
 ### Common Issues
-1. **Build Failures**: Check SourceKnight configuration in `sourceknight.yaml`
+1. **Build Failures**: Check the GitHub Actions workflow in `.github/workflows/ci.yml`
 2. **Plugin Load Errors**: Verify SourceMod version compatibility
 3. **Name Conflicts**: Ensure config file uses proper encoding and format
 4. **Memory Issues**: Look for Handle leaks and replace with modern patterns
@@ -234,5 +233,4 @@ When making functional changes:
 
 - [SourceMod Scripting Documentation](https://sm.alliedmods.net/new-api/)
 - [SourcePawn Language Reference](https://wiki.alliedmods.net/SourcePawn)
-- [SourceKnight Build Tool](https://github.com/sourcepawn-dev/sourceknight)
 - [Modern SourcePawn Patterns](https://forums.alliedmods.net/showthread.php?t=336033)
