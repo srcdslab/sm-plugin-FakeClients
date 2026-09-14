@@ -54,6 +54,10 @@ public void OnConVarChanged(ConVar hConVar, const char[] sOldValue, const char[]
 
 		if (g_bUseTiers)
 		{
+			// Tiers may not have been loaded yet (e.g. enabled mid-map without a
+			// map change, or fakeclients_tiers.cfg was edited since map start).
+			ParseTiers();
+
 			g_iPendingBots = 0;
 
 			for (int i = 1; i <= MaxClients; i++)
