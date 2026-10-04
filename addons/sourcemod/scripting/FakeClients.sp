@@ -21,7 +21,7 @@ public Plugin myinfo = {
 	name        = "FakeClients",
 	author      = "Tsunami, .Rushaway",
 	description = "Put fake clients in server with tier system",
-	version     = "3.0.0",
+	version     = "3.0.1",
 	url         = "https://github.com/srcdslab/sm-plugin-FakeClients"
 }
 
@@ -102,7 +102,7 @@ int GetTargetBotCount(int iRealPlayers)
 
 /**
  * Computes the clamped target bot count, accounting for available slots and
- * server over-capacity. Shared by AdjustFakeClientsToTier and OnClientPutInServer.
+ * server over-capacity. Shared by AdjustFakeClientsToTier and OnClientConnected.
  */
 int ComputeTarget(int iBots, int iRealPlayers, int iReservedSlots)
 {
@@ -114,18 +114,14 @@ int ComputeTarget(int iBots, int iRealPlayers, int iReservedSlots)
 	int iEffectiveBots = iBots + g_iPendingBots;
 	int iFreeSlots     = MaxClients - (iRealPlayers + iEffectiveBots + iReservedSlots);
 
-	if (iFreeSlots < 0)
-	{
-		iTarget = iEffectiveBots + iFreeSlots;
-		if (iTarget < 0)
-			iTarget = 0;
-	}
-	else
-	{
-		int iMaxBotsBySlots = iEffectiveBots + iFreeSlots;
-		if (iTarget > iMaxBotsBySlots)
-			iTarget = iMaxBotsBySlots;
-	}
+	// Never exceed the tier target, even when over capacity: freeing the reserved
+	// slot alone must not leave more bots than the tier allows.
+	int iMaxBotsBySlots = iEffectiveBots + iFreeSlots;
+	if (iTarget > iMaxBotsBySlots)
+		iTarget = iMaxBotsBySlots;
+
+	if (iTarget < 0)
+		iTarget = 0;
 
 	return iTarget;
 }
@@ -234,14 +230,16 @@ void CollectClientCounts(int &iBots, int &iRealPlayers, int &iReservedSlots)
 	iReservedSlots = bHasSourceTV ? 2 : 1;
 }
 
-public void OnClientPutInServer(int client)
+public void OnClientConnected(int client)
 {
 	// Skip fake clients: bot additions are managed via timers.
 	// Calling AdjustFakeClientsToTier on every bot join would cause cascading timers.
-	if (!client || IsFakeClient(client))
+	if (IsFakeClient(client))
 		return;
 
-	// A real player joined: only kick excess bots, never schedule additions.
+	// A real player is connecting: kick excess bots right away so the reserved slot
+	// is freed while they download/load the map, not only once they are in game.
+	// Only kick, never schedule additions.
 	// Scheduling here would race with the staggered timers already in flight.
 	int iBots, iRealPlayers, iReservedSlots;
 	CollectClientCounts(iBots, iRealPlayers, iReservedSlots);
