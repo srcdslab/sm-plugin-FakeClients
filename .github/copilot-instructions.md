@@ -111,7 +111,7 @@ When modifying this codebase, prioritize fixing these patterns:
 1. **Initialization**: `OnPluginStart()` - Set up ConVars and data structures
 2. **Map Events**: `OnMapStart()` - Parse names and start delayed fake client creation
 3. **Client Management**: 
-   - `OnClientPutInServer()` - Kick fake clients when real players join
+   - `OnClientConnected()` - Kick excess fake clients as soon as a real player starts connecting
    - `OnClientDisconnect()` - Create new fake clients to maintain count
 4. **Configuration**: Text file with one name per line
 
