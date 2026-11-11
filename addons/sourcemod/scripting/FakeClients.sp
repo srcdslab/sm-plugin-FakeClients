@@ -21,7 +21,7 @@ public Plugin myinfo = {
 	name        = "FakeClients",
 	author      = "Tsunami, .Rushaway",
 	description = "Put fake clients in server with tier system",
-	version     = "3.0.1",
+	version     = "3.0.2",
 	url         = "https://github.com/srcdslab/sm-plugin-FakeClients"
 }
 
