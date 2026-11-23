@@ -9,7 +9,9 @@ This SourceMod plugin adds fake clients (bots) to your server with a flexible ti
 - Configurable delay before bots join after a map change.
 - Supports fallback mode without tiers.
 - Loads bot display names from an external file for varied and realistic bot names.
-- Prevents kicking real players or SourceTV clients.
+- Only manages the fake clients it created: real players, game bots (`bot_quota`) and SourceTV are never kicked or counted as fake clients.
+- Optionally parks the fake clients in spectator (`sm_fakeclients_team 1`).
+- Optionally keeps the game bots until the server is full (`sm_fakeclients_bot_quota`): fake clients leave first, then `bot_quota` is lowered one slot at a time.
 - Staggered bot join timers with random delays to avoid scripted behavior.
 
 ---
@@ -92,6 +94,12 @@ Hawk
 - `sm_fakeclients_tiers` (default: 0)  
   Enable (1) or disable (0) the tier system. When enabled, bot counts follow the tiers defined in `fakeclients_tiers.cfg`.
 
+- `sm_fakeclients_team` (default: 0)  
+  Team the fake clients join: 0 = stay unassigned, 1 = spectator.
+
+- `sm_fakeclients_bot_quota` (default: -1)  
+  Number of game bots to keep. The plugin sets `bot_quota` to this value and lowers it only when real players need the slots, then raises it back when they leave. Use it with `bot_quota_mode normal`; it overrides the `bot_quota` set in `server.cfg`. -1 leaves `bot_quota` alone.
+
 ---
 
 ## How It Works
@@ -102,6 +110,8 @@ Hawk
 - If there are too few, it schedules staggered timers to add bots gradually.
 - When real players join or leave, the bot count is adjusted accordingly.
 - The plugin reserves slots to ensure real players can always connect, including extra slots if SourceTV is active.
+- Slots that `bot_quota` still has to fill are kept free, so the fake clients never take the place of a game bot.
+- Order of priority for the slots: real players, then game bots, then fake clients.
 
 ---
 
